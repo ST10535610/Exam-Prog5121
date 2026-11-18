@@ -1,0 +1,155 @@
+import javax.swing.*;
+import java.awt.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+public class ProductApp extends JFrame {
+
+    private JTextField txtCustomerName;
+    private JTextField txtPrice;
+    private JComboBox<String> cmbProduct;
+    private JButton btnProcess;
+
+    public ProductApp() {
+
+        setTitle("Product App");
+        setSize(400, 350);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new GridLayout(5, 2, 10, 10));
+
+        // Create menu
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+
+        JMenuItem processItem = new JMenuItem("Process");
+        JMenuItem clearItem = new JMenuItem("Clear");
+        JMenuItem exitItem = new JMenuItem("Exit");
+
+        fileMenu.add(processItem);
+        fileMenu.add(clearItem);
+        fileMenu.add(exitItem);
+
+        menuBar.add(fileMenu);
+        setJMenuBar(menuBar);
+
+        // Customer name
+        add(new JLabel("Customer Name:"));
+        txtCustomerName = new JTextField();
+        add(txtCustomerName);
+
+        // Product selection
+        add(new JLabel("Select Product:"));
+
+        String[] products = {
+                "Cozy Nights Monarch",
+                "Restonic Barbados",
+                "Sealy Phuket"
+        };
+
+        cmbProduct = new JComboBox<>(products);
+        add(cmbProduct);
+
+        // Product price
+        add(new JLabel("Enter Price:"));
+        txtPrice = new JTextField();
+        add(txtPrice);
+
+        // Process button
+        btnProcess = new JButton("PROCESS");
+        add(new JLabel(""));
+        add(btnProcess);
+
+        // Button actions
+        btnProcess.addActionListener(e -> processSale());
+
+        processItem.addActionListener(e -> processSale());
+
+        clearItem.addActionListener(e -> clearFields());
+
+        exitItem.addActionListener(e -> System.exit(0));
+
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    // Process the sale
+    private void processSale() {
+
+        try {
+
+            String customer = txtCustomerName.getText();
+            String product = (String) cmbProduct.getSelectedItem();
+
+            if (customer.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Please enter customer name.");
+                return;
+            }
+
+            double price = Double.parseDouble(txtPrice.getText());
+
+            if (price <= 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Please enter a valid price.");
+                return;
+            }
+
+            // Create calculation object
+            ProductCalculations calculation =
+                    new ProductCalculations(price);
+
+            double vat = calculation.GetVat();
+            double commission = calculation.GetCommission();
+            double total = calculation.GetTotal();
+
+            // Display results
+            String message =
+                    "Customer Name: " + customer +
+                            "\nProduct: " + product +
+                            "\nVAT: R " + String.format("%.2f", vat) +
+                            "\nCOMMISSION: R " +
+                            String.format("%.2f", commission) +
+                            "\nTOTAL: R " + String.format("%.2f", total);
+
+            JOptionPane.showMessageDialog(this, message);
+
+            // Save information to data.txt
+            try (PrintWriter writer =
+                         new PrintWriter(new FileWriter("data.txt", true))) {
+
+                writer.println("***********************");
+                writer.println("Customer Name: " + customer);
+                writer.println("Product: " + product);
+                writer.println("VAT: R " + vat);
+                writer.println("COMMISSION: R " + commission);
+                writer.println("TOTAL: R " + total);
+                writer.println("***********************");
+            }
+
+        } catch (NumberFormatException e) {
+
+            JOptionPane.showMessageDialog(this,
+                    "Please enter a valid number for the price.");
+
+        } catch (IOException e) {
+
+            JOptionPane.showMessageDialog(this,
+                    "Error saving information to file.");
+        }
+    }
+
+    // Clear all fields
+    private void clearFields() {
+
+        txtCustomerName.setText("");
+        txtPrice.setText("");
+        cmbProduct.setSelectedIndex(0);
+    }
+
+    // Main method
+    public static void main(String[] args) {
+
+        new ProductApp();
+    }
+}
