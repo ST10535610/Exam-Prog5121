@@ -1,0 +1,39 @@
+public class PrintProduct {
+
+    private Product product;
+
+    public PrintProduct(Product product) {
+        this.product = product;
+    }
+
+    // Print total sales
+    public void PrintTotalSales() {
+        System.out.println("TOTAL PRODUCT SALES: "
+                + product.GetTotalProductsSold());
+    }
+
+    // Print average sales
+    public void PrintAverageSales() {
+        System.out.println("AVERAGE PRODUCT SALES: "
+                + String.format("%.0f",
+                product.GetAverageProductsSold()));
+    }
+
+    // Print most popular product
+    public void PrintMostPopularProduct() {
+        System.out.println("MOST POPULAR PRODUCT: "
+                + product.GetMostPopularProduct());
+    }
+
+    public void PrintReport() {
+
+        System.out.println("\nPRODUCT SALES REPORT - 2026");
+        System.out.println("********************************");
+
+        PrintTotalSales();
+        PrintAverageSales();
+        PrintMostPopularProduct();
+
+        System.out.println("********************************");
+    }
+}
